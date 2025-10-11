@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-2xl font-bold mb-4">{{ is_edit|yesno:"Edit Post,New Post" }}</h1>
+
+  <form method="post" enctype="multipart/form-data" class="bg-white border rounded-xl p-6 space-y-4">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="p-3 rounded bg-rose-50 text-rose-700">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<div class="text-sm text-rose-600 mt-1">{{ field.errors }}</div>{% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="pt-2">
+      <button class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+        {{ is_edit|yesno:"Update,Publish" }}
+      </button>
+      <a href="{% url 'blog_list' %}" class="ml-2 px-4 py-2 rounded border">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

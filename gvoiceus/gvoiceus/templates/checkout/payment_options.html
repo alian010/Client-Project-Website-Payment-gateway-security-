@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Choose a payment method</h1>
+    <p>Order: {{ order.order_code }} — Total: {{ total }} {{ order.currency }}</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+
+      <!-- Stripe -->
+      <form method="post" action="{% url 'pay_stripe_create_session' %}" class="p-4 border rounded">
+        {% csrf_token %}
+        <input type="hidden" name="order_id" value="{{ order.id }}">
+        <h3 class="font-semibold mb-2">International (Stripe)</h3>
+        <button class="btn btn-primary w-full">Pay with Stripe</button>
+      </form>
+
+      <!-- SSLCommerz -->
+      <form method="post" action="{% url 'pay_sslcommerz_init' %}" class="p-4 border rounded">
+        {% csrf_token %}
+        <input type="hidden" name="order_id" value="{{ order.id }}">
+        <h3 class="font-semibold mb-2">Bangladeshi (SSLCommerz)</h3>
+        <button class="btn btn-primary w-full">Pay with SSLCommerz</button>
+      </form>
+
+      <!-- Coin Manual -->
+      <div class="p-4 border rounded">
+        <h3 class="font-semibold mb-2">Coin (Manual)</h3>
+        <a class="btn btn-primary w-full" href="{% url 'pay_coin_page' %}?order={{ order.id }}">Pay with Crypto</a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

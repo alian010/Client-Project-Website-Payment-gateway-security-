@@ -1,0 +1,4 @@
+Your Gvoiceus verification code: {{ code }}
+
+Enter this code to complete {{ purpose }}.
+If you didn’t request this, you can ignore this email.

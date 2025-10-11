@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-2">Order {{ order.order_code }}</h1>
+  <div class="text-sm text-gray-600 mb-6">
+    <div>User: {% if order.user %}{{ order.user.username }} ({{ order.email }}){% else %}Guest ({{ order.email }}){% endif %}</div>
+    <div>Placed: {{ order.created_at|date:"Y-m-d H:i" }}</div>
+    <div>Status:
+      {% if order.status == 'paid' %}
+        <span class="px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700">Paid</span>
+      {% else %}
+        <span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">{{ order.status|title }}</span>
+      {% endif %}
+    </div>
+    <div>Overall progress:
+      {% if all_complete %}
+        <span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">Complete</span>
+      {% else %}
+        <span class="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Running</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bg-white border rounded-xl overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 text-slate-700">
+        <tr>
+          <th class="text-left p-3">Item</th>
+          <th class="text-left p-3">Qty</th>
+          <th class="text-left p-3">Status</th>
+          <th class="text-left p-3">Delivery File</th>
+          <th class="text-left p-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in items %}
+        <tr class="border-t align-top">
+          <td class="p-3">{{ it.name }}</td>
+          <td class="p-3">{{ it.qty }}</td>
+          <td class="p-3">
+            {% if it.processing_status == 'complete' %}
+              <span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">Complete</span>
+            {% else %}
+              <span class="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Running</span>
+            {% endif %}
+          </td>
+          <td class="p-3">
+            {% if it.delivery_file %}
+              <div class="flex flex-col gap-2">
+                <a class="text-blue-600 hover:underline" href="{% url 'item_file_download' it.id %}">Download</a>
+                <div class="text-xs text-gray-500">{{ it.delivery_file.name|slice:"-40:" }}</div>
+              </div>
+            {% else %}
+              <span class="text-xs text-gray-500">No file</span>
+            {% endif %}
+          </td>
+          <td class="p-3">
+            <div class="flex flex-col gap-2">
+              <form action="{% url 'staff_item_toggle' it.id %}" method="post">
+                {% csrf_token %}
+                <button class="px-2 py-1 text-xs rounded border hover:bg-slate-50">
+                  {% if it.processing_status == 'complete' %}Mark Running{% else %}Mark Complete{% endif %}
+                </button>
+              </form>
+
+              <form action="{% url 'staff_item_upload_file' it.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="file" class="text-xs mb-1" required>
+                <button class="px-2 py-1 text-xs rounded border hover:bg-slate-50">Upload</button>
+              </form>
+
+              {% if it.delivery_file %}
+              <form action="{% url 'staff_item_delete_file' it.id %}" method="post"
+                    onsubmit="return confirm('Delete this file?');">
+                {% csrf_token %}
+                <button class="px-2 py-1 text-xs rounded border hover:bg-rose-50 text-rose-600">Delete</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td class="p-4" colspan="5">No items.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'admin_orders' %}" class="text-sm text-blue-600 hover:underline">← Back to orders</a>
+  </div>
+</div>
+{% endblock %}

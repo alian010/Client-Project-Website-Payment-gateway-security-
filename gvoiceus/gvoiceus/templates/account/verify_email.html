@@ -1,0 +1,83 @@
+<!--- gvoiceus/templates/account/verify_email.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Verify your email - Gvoiceus{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+  <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+    <h1 class="text-2xl font-semibold text-slate-900 text-center">Verify your email</h1>
+    <p class="mt-1 text-center text-sm text-slate-600">
+      We sent a 6-digit code to <span class="font-medium text-slate-900">{{ email|default:"your email" }}</span>.
+      Enter the code below to continue.
+    </p>
+
+    {% if messages %}
+      <ul class="mt-3 space-y-2">
+        {% for message in messages %}
+          <li class="text-sm rounded-lg px-3 py-2 {% if message.tags == 'error' %}bg-rose-50 text-rose-700 border border-rose-200{% else %}bg-emerald-50 text-emerald-700 border border-emerald-200{% endif %}">
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if form and form.non_field_errors %}
+      <div class="mt-3 text-sm bg-rose-50 text-rose-700 border border-rose-200 rounded-lg px-3 py-2">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_verify_email' %}" class="mt-6 space-y-4" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="email" value="{{ email }}">
+
+      <div>
+        <label for="code" class="block text-sm font-medium text-slate-700">Verification code</label>
+        <input id="code" name="code" inputmode="numeric" pattern="\\d{6}" maxlength="6" required
+               placeholder="Enter 6-digit code"
+               class="mt-1 w-full tracking-widest text-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        {% if form.code and form.code.errors %}
+          <p class="mt-1 text-sm text-rose-600">{{ form.code.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <button type="submit"
+              class="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Verify
+      </button>
+    </form>
+
+    <div class="mt-4 flex items-center justify-between text-sm">
+      <form method="post" action="{% url 'account_verify_email' %}?resend=1">
+        {% csrf_token %}
+        <input type="hidden" name="email" value="{{ email }}">
+        <button id="resendBtn" type="submit"
+                class="text-blue-600 hover:underline disabled:text-slate-400"
+                disabled>Resend code (60s)</button>
+      </form>
+      <a href="{% url 'account_login' %}" class="text-slate-600 hover:underline">Back to login</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 60s resend cooldown (client-side; server-side rate-limit must exist too)
+  let secs = 60;
+  const btn = document.getElementById('resendBtn');
+  const tick = () => {
+    if (!btn) return;
+    if (secs <= 0) {
+      btn.disabled = false;
+      btn.textContent = "Resend code";
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = `Resend code (${secs}s)`;
+    secs -= 1;
+    setTimeout(tick, 1000);
+  };
+  tick();
+</script>
+{% endblock %}

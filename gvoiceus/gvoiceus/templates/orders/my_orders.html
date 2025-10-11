@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-4">My Orders</h1>
+
+  <!-- Top summary -->
+  <div class="grid md:grid-cols-3 gap-4 mb-6">
+    <div class="p-4 bg-white border rounded-xl">
+      <div class="text-gray-500 text-sm">Total Orders</div>
+      <div class="text-2xl font-semibold">{{ total_orders }}</div>
+    </div>
+    <div class="p-4 bg-white border rounded-xl">
+      <div class="text-gray-500 text-sm">Paid</div>
+      <div class="text-2xl font-semibold">{{ summary.paid.count|default:0 }}</div>
+    </div>
+    <div class="p-4 bg-white border rounded-xl">
+      <div class="text-gray-500 text-sm">Pending</div>
+      <div class="text-2xl font-semibold">{{ summary.pending.count|default:0 }}</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex items-center gap-2 mb-4">
+    <a href="?status=" class="px-3 py-1 rounded border {% if not status_filter %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">All</a>
+    <a href="?status=new" class="px-3 py-1 rounded border {% if status_filter == 'new' %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">New</a>
+    <a href="?status=pending" class="px-3 py-1 rounded border {% if status_filter == 'pending' %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">Pending</a>
+    <a href="?status=paid" class="px-3 py-1 rounded border {% if status_filter == 'paid' %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">Paid</a>
+    <a href="?status=failed" class="px-3 py-1 rounded border {% if status_filter == 'failed' %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">Failed</a>
+    <a href="?status=cancelled" class="px-3 py-1 rounded border {% if status_filter == 'cancelled' %}bg-indigo-50 border-indigo-200 text-indigo-700{% endif %}">Cancelled</a>
+  </div>
+
+  <!-- Orders table -->
+  <div class="overflow-x-auto bg-white border rounded-xl">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 text-slate-700">
+        <tr>
+          <th class="text-left p-3">Created</th>
+          <th class="text-left p-3">Order Code</th>
+          <th class="text-left p-3">Subtotal</th>
+          <th class="text-left p-3">Currency</th>
+          <th class="text-left p-3">Method</th>
+          <th class="text-left p-3">Status</th>
+          <th class="text-left p-3">Progress</th>
+          <th class="text-left p-3">View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr class="border-t align-top">
+          <td class="p-3 whitespace-nowrap">{{ o.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="p-3 font-mono">{{ o.order_code }}</td>
+          <td class="p-3">{{ o.subtotal }}</td>
+          <td class="p-3">{{ o.currency }}</td>
+
+          <!-- Last payment method -->
+          <td class="p-3">
+            {% with pay=o.payments.last %}
+              {% if pay %}{{ pay.method|upper }}{% else %}—{% endif %}
+            {% endwith %}
+          </td>
+
+          <!-- Payment Status -->
+          <td class="p-3">
+            {% if o.status == 'paid' %}
+              <span class="px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-700">Paid</span>
+            {% elif o.status == 'pending' or o.status == 'new' %}
+              <span class="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">Pending</span>
+            {% elif o.status == 'cancelled' %}
+              <span class="px-2 py-0.5 rounded text-xs bg-slate-200 text-slate-700">Cancelled</span>
+            {% elif o.status == 'failed' %}
+              <span class="px-2 py-0.5 rounded text-xs bg-rose-100 text-rose-700">Failed</span>
+            {% else %}
+              <span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700">{{ o.status|title }}</span>
+            {% endif %}
+          </td>
+
+          <!-- Progress (quick glance) -->
+          <td class="p-3">
+            {% if o.status == 'paid' %}
+              {% if o.processing_status == 'complete' %}
+                <span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">Complete</span>
+              {% else %}
+                <span class="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Running</span>
+              {% endif %}
+            {% else %}
+              <span class="text-xs text-gray-500">—</span>
+            {% endif %}
+          </td>
+
+          <!-- View button -->
+          <td class="p-3">
+            {% if o.status == 'paid' %}
+              <a class="px-2 py-1 text-xs rounded border hover:bg-slate-50"
+                 href="{% url 'my_order_detail' o.id %}">
+                View order
+              </a>
+            {% else %}
+              <span class="text-xs text-gray-400">Locked</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td class="p-4" colspan="8">No orders yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if paginator.num_pages > 1 %}
+  <div class="mt-4 flex gap-2">
+    {% if page_obj.has_previous %}
+      <a class="px-3 py-1 border rounded" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Prev</a>
+    {% endif %}
+    <span class="px-3 py-1">Page {{ page_obj.number }} / {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a class="px-3 py-1 border rounded" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

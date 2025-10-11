@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold mb-2">{{ post.title }}</h1>
+  <div class="text-sm text-gray-500 mb-6">
+    <span>{{ post.published_at|date:"M d, Y" }}</span>
+    · <span>by {{ post.author.get_full_name|default:post.author.username }}</span>
+    {% if not post.is_published %}
+      <span class="ml-2 px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">Unpublished</span>
+    {% endif %}
+  </div>
+
+  {% if post.cover %}
+    <img src="{{ post.cover.url }}" alt="{{ post.title }}" class="w-full rounded-xl mb-6">
+  {% endif %}
+
+  <div class="prose max-w-none">
+    {{ post.content|safe }}
+  </div>
+
+  {% if request.user.is_staff %}
+  <div class="mt-8 flex items-center gap-3">
+    <a href="{% url 'staff_blog_edit' post.id %}" class="px-3 py-1 rounded bg-slate-800 text-white">Edit</a>
+    <form method="post" action="{% url 'staff_blog_delete' post.id %}" onsubmit="return confirm('Delete this post?')">
+      {% csrf_token %}
+      <button class="px-3 py-1 rounded bg-rose-600 text-white">Delete</button>
+    </form>
+  </div>
+  {% endif %}
+</article>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Pay with Crypto (Manual)</h1>
+  <p>Order: {{ order.order_code }} — Total Due: {{ order.total }} {{ order.currency }}</p>
+
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="p-4 border rounded">
+      <h3 class="font-semibold mb-2">Wallet & Instructions</h3>
+      <p><strong>Network:</strong> {{ network }}</p>
+      <p><strong>Wallet Address:</strong> <code id="addr">{{ wallet }}</code></p>
+      <button onclick="navigator.clipboard.writeText('{{ wallet }}')" class="mt-2 px-3 py-1 border rounded">Copy Address</button>
+
+      <div class="mt-4">
+        <img alt="QR" class="w-48 h-48" src="data:image/png;base64,{{ qr_b64 }}">
+      </div>
+
+      <div class="mt-4">
+        <p><strong>Contacts:</strong></p>
+        <ul class="list-disc ml-6">
+          {% if contacts.whatsapp %}<li>WhatsApp: {{ contacts.whatsapp }}</li>{% endif %}
+          {% if contacts.telegram %}<li>Telegram: {{ contacts.telegram }}</li>{% endif %}
+          {% if contacts.wechat %}<li>WeChat: {{ contacts.wechat }}</li>{% endif %}
+          {% if contacts.email %}<li>Email: {{ contacts.email }}</li>{% endif %}
+        </ul>
+        <p class="text-sm mt-2">Send exact amount & correct network. Wrong network/amount may delay verification.</p>
+      </div>
+    </div>
+
+    <div class="p-4 border rounded">
+      <h3 class="font-semibold mb-2">Submit Payment Details</h3>
+      <form method="post" action="{% url 'pay_coin_submit' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary">Submit for Manual Review</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

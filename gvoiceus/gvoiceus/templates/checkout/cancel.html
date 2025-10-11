@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto max-w-3xl py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold">Payment Cancelled</h1>
+    <p class="text-gray-700 mt-2">
+      Your payment was cancelled or failed. You can try again below.
+    </p>
+  </div>
+
+  {% if order %}
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+        <div><span class="text-gray-500">Order Code:</span> <span class="font-medium">{{ order.order_code }}</span></div>
+        <div><span class="text-gray-500">Status:</span> <span class="font-medium capitalize">{{ order.status }}</span></div>
+        <div><span class="text-gray-500">Subtotal:</span> <span class="font-medium">{{ order.subtotal }} {{ order.currency }}</span></div>
+        <div><span class="text-gray-500">Total:</span> <span class="font-medium">{{ order.total }} {{ order.currency }}</span></div>
+      </div>
+
+      {% if order.items_json %}
+        <div class="mt-4 border-t pt-4">
+          <h3 class="font-semibold mb-2">Items</h3>
+          <ul class="divide-y">
+            {% for it in order.items_json %}
+              <li class="py-2 flex justify-between">
+                <span>{{ it.name }} × {{ it.qty }}</span>
+                <span>{{ it.unit_price }} {{ it.currency }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <!-- Retry with 2Checkout -->
+    <form action="{% url 'pay_with_2checkout' %}" method="post" class="bg-white shadow rounded-lg p-6">
+      {% csrf_token %}
+      <h3 class="text-lg font-semibold mb-2">International (2Checkout)</h3>
+      <p class="text-sm text-gray-600 mb-4">Pay with cards or supported wallets via 2Checkout.</p>
+      <button class="w-full px-4 py-2 rounded bg-black text-white hover:opacity-90">
+        Try 2Checkout Again
+      </button>
+    </form>
+
+    <!-- Retry with SSLCOMMERZ -->
+    <form action="{% url 'pay_with_sslcommerz' %}" method="post" class="bg-white shadow rounded-lg p-6">
+      {% csrf_token %}
+      <h3 class="text-lg font-semibold mb-2">Bangladeshi (SSLCOMMERZ)</h3>
+      <p class="text-sm text-gray-600 mb-4">Local gateways (বিকাশ/কার্ড ইত্যাদি)।</p>
+      <button class="w-full px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
+        Try SSLCOMMERZ Again
+      </button>
+      {% if order and order.currency != "BDT" %}
+        <p class="text-xs text-orange-600 mt-2">
+          Note: SSLCOMMERZ requires BDT currency.
+        </p>
+      {% endif %}
+    </form>
+
+    <!-- Back links -->
+    <div class="bg-white shadow rounded-lg p-6 flex flex-col justify-between">
+      <div>
+        <h3 class="text-lg font-semibold mb-2">Need to review?</h3>
+        <p class="text-sm text-gray-600 mb-4">Go back to your cart or checkout.</p>
+      </div>
+      <div class="space-y-2">
+        <a href="{% url 'checkout' %}" class="block w-full text-center px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+          Back to Checkout
+        </a>
+        <a href="{% url 'cart_view' %}" class="block w-full text-center px-4 py-2 rounded border text-gray-700 hover:bg-gray-50">
+          Back to Cart
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

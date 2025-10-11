@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-10">
+  <div class="text-center mb-10">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Contact Us</h1>
+    <p class="mt-3 text-gray-600">We’re here to help. Reach us on your favorite platform.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <!-- WhatsApp -->
+    <a
+      href="https://wa.me/{{ contact_whatsapp|cut:'+'|cut:' ' }}?text=Hello%20Asinfluencer%20Support"
+      target="_blank" rel="noopener"
+      class="group block rounded-2xl border p-6 hover:shadow-lg bg-white"
+    >
+      <div class="flex flex-col items-center text-center">
+        <!-- WhatsApp (brand green #25D366) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"
+             class="w-16 h-16 mb-4 text-[#25D366]">
+          <path fill="currentColor" d="M380.9 97.1C339 55.2 283.2 32 224.7 32 103.5 32 0 135.5 0 256c0 45 11.7 88.4 34 127L0 480l101.5-33.3c37.3 20.4 79.4 31.3 123.2 31.3h.1c121.2 0 224.7-103.5 224.7-224.7 0-58.5-23.2-114.3-65.1-156.2zM224.7 438.6c-39.3 0-77.7-10.5-111.3-30.4l-7.9-4.7-60.2 19.7 19.9-58.6-5.1-8.3C42.8 324.5 32 290.9 32 256 32 150.1 118.8 63.3 224.7 63.3c56.6 0 109.8 22 149.9 62.1 40.1 40.1 62.1 93.3 62.1 149.9 0 105.9-86.8 193.3-211.9 193.3zm123-146.3c-6.7-3.4-39.6-19.5-45.8-21.7-6.1-2.3-10.6-3.4-15.1 3.4-4.6 6.7-17.3 21.7-21.2 26.2-3.9 4.5-7.8 5.1-14.5 1.7-39.6-19.8-65.4-35.3-91.5-80-6.9-11.9 6.9-11.1 19.8-37 2.2-4.5 1.1-8.4-.6-11.8-1.7-3.4-15.1-36.4-20.7-49.9-5.5-13.3-11.1-11.5-15.1-11.7-3.9-.2-8.4-.2-12.9-.2s-11.8 1.7-18 8.4c-6.1 6.7-23.5 22.9-23.5 56 0 33 24 64.9 27.3 69.3 3.4 4.5 46.2 70.5 112 99 15.6 6.7 27.8 10.7 37.3 13.7 15.6 5 29.8 4.3 41 2.6 12.5-1.9 39.6-16.2 45.1-31.9 5.6-15.7 5.6-29.1 3.9-31.9-1.6-2.9-6.1-4.5-12.8-7.9z"/>
+        </svg>
+        <h3 class="text-lg font-semibold">WhatsApp</h3>
+        <p class="text-gray-600 mt-1">{{ contact_whatsapp }}</p>
+        <span class="mt-4 inline-block rounded-lg px-4 py-2 border bg-green-50 text-green-700 group-hover:bg-green-100">
+          Chat on WhatsApp
+        </span>
+      </div>
+    </a>
+
+    <!-- Telegram -->
+    <a
+      href="https://t.me/{{ contact_telegram|cut:'@' }}"
+      target="_blank" rel="noopener"
+      class="group block rounded-2xl border p-6 hover:shadow-lg bg-white"
+    >
+      <div class="flex flex-col items-center text-center">
+        <!-- Telegram (brand blue #229ED9) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"
+             class="w-16 h-16 mb-4 text-[#229ED9]">
+          <path fill="currentColor" d="M248,8C111,8,0,119,0,256c0,137,111,248,248,248c137,0,248-111,248-248C496,119,385,8,248,8z M363.1,176.4l-45.5,214.8 c-3.4,15.2-12.4,18.9-25.2,11.8l-69.6-51.3l-33.6,32.3c-3.7,3.7-6.8,6.8-13.9,6.8l5-71.2l129.6-117c5.6-5-1.2-7.8-8.7-2.8 l-160.2,100.7l-69-21.6c-15-4.7-15.3-15-3.2-22.1l270-104.1C356.7,148.7,368.6,158.1,363.1,176.4z"/>
+        </svg>
+        <h3 class="text-lg font-semibold">Telegram</h3>
+        <p class="text-gray-600 mt-1">@{{ contact_telegram|cut:'@' }}</p>
+        <span class="mt-4 inline-block rounded-lg px-4 py-2 border bg-blue-50 text-blue-700 group-hover:bg-blue-100">
+          Open Telegram
+        </span>
+      </div>
+    </a>
+
+    <!-- WeChat -->
+    <div class="group rounded-2xl border p-6 bg-white hover:shadow-lg">
+      <div class="flex flex-col items-center text-center">
+        <!-- WeChat (brand green #07C160) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+             class="w-16 h-16 mb-4 text-[#07C160]">
+          <path fill="currentColor" d="M416 192c0 70.7-64.5 128-144 128c-14.7 0-28.9-1.8-42.3-5.2C200.3 342.1 177.1 352 152 352c-3.3 0-6.6-.2-9.8-.5C153.4 369.5 176.2 384 202.7 384c9.6 0 18.9-1.2 27.6-3.4c13.5 3.4 27.6 5.4 42.1 5.4c79.5 0 144-57.3 144-128c0-18.6-4.4-36.2-12.2-52.1C409 207.4 416 199.3 416 192zM144 224a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm96-16a16 16 0 1 1 32 0 16 16 0 1 1 -32 0zm80 16a16 16 0 1 1 0-32 16 16 0 1 1 0 32zM544 224c0 79.5-79.2 144-176.8 144c-8.6 0-17.1-.5-25.4-1.5c-21.6 13.4-49.5 21.5-80.1 21.5c-6.3 0-12.5-.3-18.6-.8c-8.1 3.9-17.2 6.3-26.9 6.3c-30.9 0-56-22.3-60.9-51.3C130.9 331 128 317.7 128 304c0-79.5 79.2-144 176.8-144S544 144.5 544 224z"/>
+        </svg>
+        <h3 class="text-lg font-semibold">WeChat</h3>
+        <p class="text-gray-600 mt-1">
+          <span id="wechatId">{{ contact_wechat }}</span>
+        </p>
+        <button
+          type="button"
+          onclick="copyWeChat()"
+          class="mt-4 inline-block rounded-lg px-4 py-2 border bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+        >
+          Copy WeChat ID
+        </button>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <a
+      href="mailto:{{ contact_email }}?subject=Support%20Request"
+      class="group block rounded-2xl border p-6 hover:shadow-lg bg-white"
+    >
+      <div class="flex flex-col items-center text-center">
+        <!-- Email (Gmail red #EA4335 for envelope) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+             class="w-16 h-16 mb-4 text-[#EA4335]">
+          <path fill="currentColor" d="M502.3 190.8L327.4 338.3c-15.9 13.1-39 13.1-54.8 0L9.7 190.8C3.9 186.1 0 178.8 0 170.9V112c0-26.5 21.5-48 48-48h416c26.5 0 48 21.5 48 48v58.9C512 178.8 508.1 186.1 502.3 190.8zM480 224v176c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V224l175.1 144.2c26.6 21.9 65.1 21.9 91.7 0L480 224z"/>
+        </svg>
+        <h3 class="text-lg font-semibold">Email</h3>
+        <p class="text-gray-600 mt-1">{{ contact_email }}</p>
+        <span class="mt-4 inline-block rounded-lg px-4 py-2 border bg-slate-50 text-slate-700 group-hover:bg-slate-100">
+          Send Email
+        </span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+  function copyWeChat() {
+    const text = document.getElementById('wechatId').innerText.trim();
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('WeChat ID copied: ' + text);
+    });
+  }
+</script>
+{% endblock %}

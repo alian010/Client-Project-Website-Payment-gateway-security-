@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign in - Gvoiceus{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+  <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+    <h1 class="text-2xl font-semibold text-slate-900 text-center">Sign in</h1>
+    <p class="mt-1 text-center text-sm text-slate-600">
+      Don’t have an account?
+      <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Create one</a>
+    </p>
+
+    {% if messages %}
+      <ul class="mt-3 space-y-2">
+        {% for message in messages %}
+          <li class="text-sm rounded-lg px-3 py-2
+                     {% if 'error' in message.tags %}
+                       bg-rose-50 text-rose-700 border border-rose-200
+                     {% else %}
+                       bg-emerald-50 text-emerald-700 border border-emerald-200
+                     {% endif %}">
+            {{ message }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if form and form.non_field_errors %}
+      <div class="mt-3 text-sm bg-rose-50 text-rose-700 border border-rose-200 rounded-lg px-3 py-2">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}" class="mt-6 space-y-4" novalidate>
+      {% csrf_token %}
+
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+      {% endif %}
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email"
+               value="{{ form.email.value|default_if_none:'' }}"
+               class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               placeholder="you@example.com">
+        {% if form.email.errors %}
+          <p class="mt-1 text-sm text-rose-600">{{ form.email.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <div class="relative">
+        <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password"
+               class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+               placeholder="••••••••">
+        <button type="button" class="absolute right-2 top-9 text-slate-500 text-xs px-2 py-1" id="togglePw">Show</button>
+        {% if form.password.errors %}
+          <p class="mt-1 text-sm text-rose-600">{{ form.password.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <div class="flex items-center justify-between">
+        <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+          <input type="checkbox" name="remember" class="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500">
+          Remember me
+        </label>
+
+        {# Forgot password link (silently hides if URL not configured) #}
+        {% url 'password_reset' as pw_reset %}
+        {% if pw_reset %}
+          <a href="{{ pw_reset }}" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        {% endif %}
+      </div>
+
+      <button type="submit"
+              class="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Continue
+      </button>
+    </form>
+
+    <p class="mt-4 text-center text-xs text-slate-500">
+      First time login requires verified email. Check your inbox for the code.
+    </p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const btn = document.getElementById('togglePw');
+    const input = document.getElementById('password');
+    if (btn && input) {
+      btn.addEventListener('click', () => {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        btn.textContent = type === 'password' ? 'Show' : 'Hide';
+      });
+    }
+  })();
+</script>
+{% endblock %}

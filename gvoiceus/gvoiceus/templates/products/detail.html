@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ seo.title }} - MyShop{% endblock %}
+{% block content %}
+  <br>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded">{% endif %}
+    </div>
+    <div>
+      <h1 class="text-2xl font-semibold">{{ product.name }}</h1>
+      <p class="mt-1 text-gray-600">{{ product.short_description }}</p>
+      <div class="mt-3 text-xl font-bold">${{ product.price }}</div>
+
+      <form action="{% url 'cart_add' product.slug %}" method="post" class="mt-4 flex items-center gap-2">
+        {% csrf_token %}
+        <label>Qty</label>
+        <input type="number" name="qty" min="1" value="1" class="w-20 px-3 py-2 border rounded">
+        <button class="px-4 py-2 rounded bg-blue-600 text-white">Add to cart</button>
+      </form>
+
+      {% if product.description %}
+        <div class="mt-6 prose prose-invert max-w-none">{{ product.description|linebreaks }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if related_products %}
+    <h1 class="mt-10 text-lg font-semibold  text-center"  >You may also like</h1>
+
+
+    <nav class="mb-6">
+  <ul class="flex flex-wrap items-center justify-center gap-2 list-none p-0 m-0">
+    {% for c in categories %}
+      <li class="shrink-0">
+        <a href="{% url 'products_by_category' c.slug %}"
+           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border transition whitespace-nowrap
+                  {% if active_category and active_category.slug == c.slug %}
+                    bg-blue-600 text-white border-blue-600
+                  {% else %}
+                    bg-white text-slate-700 border-slate-300 hover:bg-slate-50
+                  {% endif %}">
+          <span class="truncate max-w-[180px]">{{ c.name }}</span>
+          {% if c.count %}<span class="text-xs opacity-80">({{ c.count }})</span>{% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+
+
+    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4">
+      {% for rp in related_products %}
+        <a class="block rounded border p-3 hover:shadow" href="{% url 'product_detail' rp.slug %}">
+          {% if rp.image %}<img src="{{ rp.image.url }}" alt="{{ rp.name }}" class="mb-2 rounded">{% endif %}
+          <div class="font-medium">{{ rp.name }}</div>
+          <div class="font-bold">${{ rp.price }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

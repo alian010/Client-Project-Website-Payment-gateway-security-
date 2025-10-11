@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto max-w-3xl py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-green-700">Payment Successful</h1>
+    <p class="text-gray-700 mt-2">Thank you! Your payment was completed successfully.</p>
+  </div>
+
+  {% if order %}
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+        <div><span class="text-gray-500">Order Code:</span> <span class="font-medium">{{ order.order_code }}</span></div>
+        <div><span class="text-gray-500">Status:</span> <span class="font-medium capitalize">{{ order.status }}</span></div>
+        <div><span class="text-gray-500">Subtotal:</span> <span class="font-medium">{{ order.subtotal }} {{ order.currency }}</span></div>
+        <div><span class="text-gray-500">Total Paid:</span> <span class="font-medium">{{ order.total }} {{ order.currency }}</span></div>
+      </div>
+
+      {% if order.items_json %}
+        <div class="mt-4 border-t pt-4">
+          <h3 class="font-semibold mb-2">Items</h3>
+          <ul class="divide-y">
+            {% for it in order.items_json %}
+              <li class="py-2 flex justify-between">
+                <span>{{ it.name }} × {{ it.qty }}</span>
+                <span>{{ it.unit_price }} {{ it.currency }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <a href="{% url 'home' %}" class="block text-center px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">
+      Go Home
+    </a>
+    <a href="{% url 'my_orders' %}" class="block text-center px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+      View My Orders
+    </a>
+    <a href="{% url 'products' %}" class="block text-center px-4 py-2 rounded border text-gray-700 hover:bg-gray-50">
+      Shop More
+    </a>
+  </div>
+
+  {% if request.user.is_staff %}
+    <div class="text-center mt-6">
+      <a href="{% url 'admin_orders' %}" class="text-sm text-gray-500 hover:underline">Admin: Orders dashboard</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
